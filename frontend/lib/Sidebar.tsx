@@ -25,15 +25,16 @@ interface SidebarProps {
 }
 
 const defaultItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon size={16} />, isActive: true },
-  { id: 'live', label: 'Live', icon: <LiveIcon size={16} /> },
+  { id: 'live', label: 'Live', icon: <LiveIcon size={16} />, isActive: true },
   { id: 'view', label: 'View', icon: <ViewIcon size={16} /> },
+  { id: 'personalize', label: 'Personalize', icon: <PersonalizeIcon size={16} /> },
+  { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon size={16} /> },
   { id: 'external-stream', label: 'Add Stream', icon: <ExternalStreamIcon size={16} /> },
 ];
 
 export function Sidebar({ className = '', isCollapsed = false, onToggle, room: propRoom, onTabChange, activeTab }: SidebarProps) {
   const [items, setItems] = useState<SidebarItem[]>(defaultItems);
-  const [activeItem, setActiveItem] = useState(activeTab || 'dashboard');
+  const [activeItem, setActiveItem] = useState(activeTab || 'live');
   const [isExternalStreamModalOpen, setIsExternalStreamModalOpen] = useState(false);
   
   // Try to get room from context, fallback to prop

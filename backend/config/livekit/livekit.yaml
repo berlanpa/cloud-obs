@@ -1,9 +1,0 @@
-port: 7880
-
-keys:
-  devkey: secret
-
-room:
-  auto_create: true
-  empty_timeout: 300
-  max_participants: 20

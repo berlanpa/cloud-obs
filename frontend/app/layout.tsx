@@ -6,39 +6,40 @@ import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Pablo Berlanga Boemare | AI-Native Cloud OBS',
+    default: 'Geome Live | the Broadcasting Space',
     template: '%s',
   },
   description:
-    'AI-powered auto-director system that intelligently switches between camera feeds using YOLO object detection, Vision-Language Models, and Whisper ASR.',
+    'LiveKit is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
   twitter: {
-    creator: '@pabloberlanga',
-    site: '@pabloberlanga',
+    creator: '@livekitted',
+    site: '@livekitted',
     card: 'summary_large_image',
   },
   openGraph: {
-    url: 'https://ai-obs.pabloberlanga.com',
+    url: 'https://meet.livekit.io',
     images: [
       {
-        url: 'https://ai-obs.pabloberlanga.com/images/ai-obs-open-graph.png',
+        url: 'https://meet.livekit.io/images/livekit-meet-open-graph.png',
         width: 2000,
         height: 1000,
         type: 'image/png',
       },
     ],
-    siteName: 'AI-Native Cloud OBS',
+    siteName: 'LiveKit Meet',
   },
   icons: {
     icon: {
       rel: 'icon',
-      url: '/favicon.png',
+      url: '/favicon.ico',
     },
     apple: [
       {
         rel: 'apple-touch-icon',
-        url: '/favicon.png',
+        url: '/images/livekit-apple-touch.png',
         sizes: '180x180',
       },
+      { rel: 'mask-icon', url: '/images/livekit-safari-pinned-tab.svg', color: '#070707' },
     ],
   },
 };

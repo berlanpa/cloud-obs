@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { randomString } from '@/lib/client-utils';
 import styles from '../styles/Home.module.css';
 
@@ -125,34 +125,20 @@ function ConnectionForm() {
 }
 
 export default function Page() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to main page after a short delay
-    const timer = setTimeout(() => {
-      router.push('/main');
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [router]);
-
   return (
     <>
       <main className={styles.main} data-lk-theme="default">
         <div className="header">
-          <img src="/logotype.svg" alt="Pablo Berlanga Boemare" width="350" />
+          <img src="/logotype.svg" alt="Geome" width="350" />
           <h2>
-            AI-Native Cloud OBS
+            Live beyond limits.
           </h2>
-          <p className="text-gray-400 mt-4">Redirecting to dashboard...</p>
         </div>
-        <div className="flex items-center justify-center mt-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
+        <ConnectionForm />
       </main>
       <footer data-lk-theme="default">
-        Pablo Berlanga Boemare 2025, for more information{' '}
-        <a href="https://pabloberlanga.com" rel="noopener">
+        Geome, Inc 2025, for more information{' '}
+        <a href="https://geomelab.com" rel="noopener">
           click here
         </a>
         .
