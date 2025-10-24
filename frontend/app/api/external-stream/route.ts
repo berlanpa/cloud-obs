@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LiveKit } from 'livekit-server-sdk';
+import { RoomServiceClient } from 'livekit-server-sdk';
 
-const lk = new LiveKit(process.env.LIVEKIT_API_KEY!, process.env.LIVEKIT_API_SECRET!);
+const roomService = new RoomServiceClient(
+  process.env.LIVEKIT_URL!,
+  process.env.LIVEKIT_API_KEY!,
+  process.env.LIVEKIT_API_SECRET!
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,8 +19,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the room
-    const room = await lk.rooms.get(roomName);
-    if (!room) {
+    const rooms = await roomService.listRooms([roomName]);
+    if (!rooms || rooms.length === 0) {
       return NextResponse.json(
         { error: 'Room not found' },
         { status: 404 }
@@ -24,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Start RTMP input
-    const rtmpInput = await room.startRtmpInput({
+    const rtmpInput = await roomService.startRtmpInput({
       url: streamUrl,
       name: streamName || 'External Stream',
       videoEnabled: true,

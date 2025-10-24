@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from '../styles/Sidebar.module.css';
 import { LiveIcon, ViewIcon, PersonalizeIcon, DashboardIcon, ExternalStreamIcon } from './icons/SidebarIcons';
 import { ExternalStreamModal } from './ExternalStreamModal';
-import { useRoomContext } from '@livekit/components-react';
+import { useRoomContext, useMaybeRoomContext } from '@livekit/components-react';
 import { Room } from 'livekit-client';
 
 interface SidebarItem {
@@ -37,14 +37,9 @@ export function Sidebar({ className = '', isCollapsed = false, onToggle, room: p
   const [activeItem, setActiveItem] = useState(activeTab || 'live');
   const [isExternalStreamModalOpen, setIsExternalStreamModalOpen] = useState(false);
   
-  // Try to get room from context, fallback to prop
-  let room: Room | null = null;
-  try {
-    room = useRoomContext();
-  } catch (error) {
-    // Room context not available, use prop
-    room = propRoom || null;
-  }
+  // Use the safe hook that returns null when context is not available
+  const roomContext = useMaybeRoomContext();
+  const room: Room | null = roomContext || propRoom || null;
 
   const handleItemClick = (itemId: string) => {
     if (itemId === 'external-stream') {
