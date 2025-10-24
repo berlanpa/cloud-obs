@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Room } from 'livekit-client';
+import { Room, Track } from 'livekit-client';
+import { convertForLiveKit, convertForLiveKitFallback } from './convertForLiveKit';
 import styles from '../styles/ExternalStreamModal.module.css';
 
 interface ExternalStreamModalProps {
@@ -43,27 +44,53 @@ export function ExternalStreamModal({ isOpen, onClose, room }: ExternalStreamMod
         }
       } else if (streamUrl.startsWith('http')) {
         // Handle HTTP video streams
-        const video = document.createElement('video');
-        video.src = streamUrl;
-        video.crossOrigin = 'anonymous';
-        video.muted = true;
+      const video = document.createElement('video');
+      video.src = streamUrl;
+      video.crossOrigin = 'anonymous';
+      video.muted = false; // Enable audio for external streams
         
         await new Promise((resolve, reject) => {
           video.onloadedmetadata = resolve;
           video.onerror = reject;
         });
 
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 1280;
-        canvas.height = 720;
-
-        const stream = canvas.captureStream(30);
+        // Use the new LiveKit converter for optimal color space handling
+        let stream: MediaStream;
+        try {
+          // Try WebCodecs approach first (modern browsers)
+          stream = await convertForLiveKit(video, {
+            targetWidth: 1280,
+            targetHeight: 720,
+            frameRate: 30,
+            enableHardwareAcceleration: true
+          });
+        } catch (error) {
+          console.warn('WebCodecs not available, falling back to canvas method:', error);
+          // Fallback to canvas method for older browsers
+          stream = convertForLiveKitFallback(video, {
+            targetWidth: 1280,
+            targetHeight: 720,
+            frameRate: 30
+          });
+        }
         
-        // Publish the stream
-        await room.localParticipant.publishTracks([
-          new (await import('livekit-client')).LocalVideoTrack(stream.getVideoTracks()[0])
-        ]);
+        const videoTrack = stream.getVideoTracks()[0];
+        const audioTrack = stream.getAudioTracks()[0];
+        
+        // Publish video track with custom name to distinguish from camera
+        const currentUser = room.localParticipant.identity;
+        await room.localParticipant.publishTrack(videoTrack, {
+          name: `📹 ${streamName || 'External Stream'} (by ${currentUser})`,
+          source: Track.Source.Camera
+        });
+        
+        // Publish audio track if available
+        if (audioTrack) {
+          await room.localParticipant.publishTrack(audioTrack, {
+            name: `🎵 ${streamName || 'External Stream'} Audio (by ${currentUser})`,
+            source: Track.Source.Microphone
+          });
+        }
       }
 
       onClose();
@@ -86,27 +113,53 @@ export function ExternalStreamModal({ isOpen, onClose, room }: ExternalStreamMod
     try {
       const video = document.createElement('video');
       video.src = URL.createObjectURL(file);
-      video.muted = true;
+      video.muted = false; // Enable audio for uploaded files
       
       await new Promise((resolve, reject) => {
         video.onloadedmetadata = resolve;
         video.onerror = reject;
       });
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 1280;
-      canvas.height = 720;
-
-      // Start playing the video and capturing frames
+      // Start playing the video
       video.play();
       
-      const stream = canvas.captureStream(30);
+      // Use the new LiveKit converter for optimal color space handling
+      let stream: MediaStream;
+      try {
+        // Try WebCodecs approach first (modern browsers)
+        stream = await convertForLiveKit(video, {
+          targetWidth: 1280,
+          targetHeight: 720,
+          frameRate: 30,
+          enableHardwareAcceleration: true
+        });
+      } catch (error) {
+        console.warn('WebCodecs not available, falling back to canvas method:', error);
+        // Fallback to canvas method for older browsers
+        stream = convertForLiveKitFallback(video, {
+          targetWidth: 1280,
+          targetHeight: 720,
+          frameRate: 30
+        });
+      }
       
-      // Publish the stream
-      await room.localParticipant.publishTracks([
-        new (await import('livekit-client')).LocalVideoTrack(stream.getVideoTracks()[0])
-      ]);
+      const videoTrack = stream.getVideoTracks()[0];
+      const audioTrack = stream.getAudioTracks()[0];
+      
+      // Publish video track with custom name to distinguish from camera
+      const currentUser = room.localParticipant.identity;
+      await room.localParticipant.publishTrack(videoTrack, {
+        name: `📹 Uploaded Video (by ${currentUser})`,
+        source: Track.Source.Camera
+      });
+      
+      // Publish audio track if available
+      if (audioTrack) {
+        await room.localParticipant.publishTrack(audioTrack, {
+          name: `🎵 Uploaded Video Audio (by ${currentUser})`,
+          source: Track.Source.Microphone
+        });
+      }
 
       onClose();
     } catch (err) {

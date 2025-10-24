@@ -86,7 +86,8 @@ export function CameraSettings() {
             maxHeight: '280px',
             objectFit: 'contain',
             objectPosition: 'right',
-            transform: 'scaleX(-1)',
+            // Only flip camera tracks, not uploaded videos
+            transform: camTrackRef?.source === Track.Source.Camera ? 'scaleX(-1)' : 'none',
           }}
           trackRef={camTrackRef}
         />
