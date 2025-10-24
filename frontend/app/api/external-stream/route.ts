@@ -1,11 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RoomServiceClient } from 'livekit-server-sdk';
-
-const roomService = new RoomServiceClient(
-  process.env.LIVEKIT_URL!,
-  process.env.LIVEKIT_API_KEY!,
-  process.env.LIVEKIT_API_SECRET!
-);
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,27 +11,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the room
-    const rooms = await roomService.listRooms([roomName]);
-    if (!rooms || rooms.length === 0) {
-      return NextResponse.json(
-        { error: 'Room not found' },
-        { status: 404 }
-      );
-    }
-
-    // Start RTMP input
-    const rtmpInput = await roomService.startRtmpInput({
-      url: streamUrl,
-      name: streamName || 'External Stream',
-      videoEnabled: true,
-      audioEnabled: true,
-    });
-
+    // For now, RTMP input is not supported in the current LiveKit server SDK
+    // The external stream functionality is handled client-side through video upload
     return NextResponse.json({
-      success: true,
-      inputId: rtmpInput.id,
-      message: 'External stream added successfully'
+      success: false,
+      message: 'RTMP input is not currently supported. Please use the video upload feature instead.'
     });
 
   } catch (error) {
