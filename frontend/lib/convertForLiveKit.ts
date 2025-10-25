@@ -5,6 +5,13 @@
  * using WebCodecs + OffscreenCanvas for optimal performance.
  */
 
+// Extend OffscreenCanvas type to include captureStream method
+declare global {
+  interface OffscreenCanvas {
+    captureStream(frameRate?: number): MediaStream;
+  }
+}
+
 export interface ColorSpaceConfig {
   primaries: 'bt709' | 'bt2020' | 'srgb';
   transfer: 'bt709' | 'bt2020' | 'srgb';
