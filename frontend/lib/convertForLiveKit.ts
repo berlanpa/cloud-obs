@@ -132,7 +132,7 @@ export class LiveKitVideoConverter {
           // Create new VideoFrame with correct color space
           const convertedFrame = new VideoFrame(this.canvas!, {
             timestamp: frame.timestamp,
-            duration: frame.duration,
+            duration: frame.duration ?? undefined,
             colorSpace: this.options.colorSpace!
           });
 
